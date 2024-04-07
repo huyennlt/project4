@@ -1,0 +1,114 @@
+<div class="container-fluid bg-info min-vh-100 d-flex justify-content-center align-items-center py-2">
+    <div class="row d-flex justify-content-center ">
+        <!-- box__product -->
+        <div *ngFor="let p of products; let product_Index = index"
+            class="product__box col-12 col-sm-6 col-md-4 col-lg-3 bg-light p-3 m-1">
+            <div class="product__box--inner">
+                <div [ngSwitch]="inputDatas[product_Index].currentColor" [id]="'product_slide'+product_Index"
+                    class="carousel slide carousel-fade">
+                    <ng-container *ngFor="let item of p.img_And_Colors; let i = index">
+                        <div *ngSwitchCase="item.tenMau" class="carousel-inner position-relative">
+                            <div *ngFor="let img of item.images; let j = index" class="carousel-item"
+                                [ngClass]="j==0?'active':''">
+                                <img [src]="img" class="d-block w-100 object-fit-contain" alt="..." height="220px">
+                                <div
+                                    class="index__item bg-dark position-absolute top-0 end-0 text-light rounded-5 px-3 py-1">
+                                    {{j+1}}/{{item.images.length}}
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <button class="carousel-control-prev" type="button"
+                        [attr.data-bs-target]="'#product_slide'+product_Index" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon rounded-circle bg-secondary" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button"
+                        [attr.data-bs-target]="'#product_slide'+product_Index" data-bs-slide="next">
+                        <span class="carousel-control-next-icon rounded-circle bg-secondary" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+                <div class="price__box mt-3 w-100">
+                    <p class="price text-danger mb-2 fw-bold d-inline-block fs-5">{{p.gia_hien_tai|
+                        number:'1.0-0'}}{{p.don_vi}}<span
+                            class="corner__price text-secondary text-decoration-line-through ms-2 fw-normal">
+                            {{p.gia_goc | number:'1.0-0'}}{{p.don_vi}}</span></p>
+                    <span *ngIf="p.isBestSeller"
+                        class="status__item w-25 text-center text-danger rounded-5 bg-warning px-2 ms-2">Best
+                        Seller</span>
+                </div>
+                <div class="content__box w-100 position-relative">
+                    <div class="box__head d-flex align-items-center">
+<h6 class="name fw-bold fs-6">{{p.name}}</h6>
+                        <div class="reviews ms-auto "><i class="bi bi-star-fill text-warning me-1"></i>{{p.don_gia}}
+                            ({{p.slg_don_gia}}+)></div>
+                    </div>
+                  
+                </div>
+                <div class="color__box mt-2 w-100">
+                    <h6 class="fw-bold mb-2 fs-5">color</h6>
+                    <div class="box__body d-flex align-items-center">
+                        <button *ngFor="let color of p.img_And_Colors; let i = index"
+                            [ngClass]="inputDatas[product_Index].currentColor === color.tenMau ? 'active' : ''"
+                            [ngStyle]="{'background-color': color.maMau}"
+                            (click)="updateColor(product_Index, color.tenMau)"
+                            class="btn__color rounded-circle mx-2" style="width: 25px; height: 25px;" type="button">
+                        </button>
+                    </div>
+                </div>
+                <div class="size__box mt-3 w-100">
+                    <h6 class="size fw-bold fs-6">Size ({{p.size_unit}})</h6>
+                    <div class="box__body d-flex align-items-center flex-wrap">
+                        <button *ngFor="let size of p.listSize" id="size{{size}}"
+                            [ngClass]="inputDatas[product_Index].currentSize==size?'active':''"
+                            (click)="updateBtnSize(product_Index, size)" class=" btn__size border-0 rounded-5 me-2"
+                            style="min-width: 60px; height: 30px;" type="button">{{size}}</button>
+                    </div>
+                </div>
+                <div class="quantity__box mt-3 w-100">
+                    <div class="box__head d-flex">
+                        <h6 class="size fw-bold fs-6">Quantity</h6>
+                        <span *ngIf="p.quantityInStock>0"
+                            class="stock__status w-25 text-center text-dark rounded-5 py-1 ms-2 mb-auto">In Stock</span>
+                        <span *ngIf="p.quantityInStock==0"
+class="stock__status w-25 text-center bg-danger text-white rounded-5 py-1 ms-2 mb-auto">Out
+                            Stock</span>
+                    </div>
+                    <div class="box__body w-100 d-flex align-items-end flex-wrap">
+                        <div class="item1 d-flex align-items-center input-group mt-1 rounded-2">
+                            <button class="btn btn-sm text-black" (click)="minusQuantity(product_Index)"
+                                [disabled]="inputDatas[product_Index].productQuantityInput <=0">
+                                <i class="bi bi-dash-lg"></i></button>
+                            <input type="number" min="1" class="form-control form-control-sm text-center"
+                                [value]="inputDatas[product_Index].productQuantityInput" readonly>
+                            <button class="btn btn-sm text-black " (click)="addQuantity(product_Index)"
+                                [disabled]="inputDatas[product_Index].productQuantityInput >= p.quantityInStock">
+                                <i class="bi bi-plus-lg"></i></button>
+                        </div>
+                        <div class="item2 d-flex align-items-end ms-auto rounded-2">
+                            <div class="title fs-6 fw-bold text-danger me-2">Tổng:</div>
+                            <div class="total fs-6 fw-bold">{{inputDatas[product_Index].totalPrice | number:'1.0-0'}}{{p.don_vi}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box__btnBuy d-flex align-items-center mt-3 rounded-2 p-2 px-3">
+                    <a href="#" class="d-block position-relative">
+                        <i class="bi bi-heart fs-4 text-dark"></i>
+                        <span
+                            class="heart_notification position-absolute bg-danger border-1 translate-middle border-light rounded-circle">
+                        </span>
+                    </a>
+                    <a href="#" class="d-block position-relative ms-3 mb-1">
+                        <i class="bi bi-cart fs-3 text-dark"></i>
+                        <span
+                            class="cart_notification position-absolute bg-danger border-1  border-light rounded-circle">
+                        </span>
+                    </a>
+                    <button class="btn__buy d-block btn py-2 fw-bold flex-grow-1 ms-4 fs-6 text-light"
+                        (click)="buyNow()" [disabled]="inputDatas[product_Index].isNotBuyNow">Buy Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
